@@ -1,8 +1,100 @@
-# Flux Banco
+# Proyecto FLUX – Base de Datos Distribuida Bancaria
 
-Aplicacion bancaria React + Express. El backend sirve el frontend compilado y expone la API REST sobre PostgreSQL usando `pg.Pool`.
+Este proyecto simula el funcionamiento de un **cajero automático** conectado a una **base de datos distribuida** en PostgreSQL.  
+El objetivo es mostrar cómo la fragmentación y el uso de redes permiten que un sistema bancario sea más escalable, seguro y tolerante a fallos.
+
+---
+
+## 📌 Introducción
+En un banco, las operaciones deben ser rápidas y confiables. Una base de datos centralizada puede convertirse en un cuello de botella, mientras que una **BD distribuida** reparte la carga entre nodos y sucursales.  
+FLUX busca demostrar cómo un cajero puede operar sobre fragmentos de datos distribuidos y sincronizados en red.
+
+---
+
+## 🎯 Objetivos
+- Mostrar la diferencia entre una **BD normal** vs una **BD distribuida**.  
+- Simular la fragmentación de datos en un sistema bancario.  
+- Implementar consultas y operaciones de cajero automático.
+- Tener un rol administrador para gestionar el funcionamiento, el diseño y la seguridad del proyecto Flux. 
+- Documentar los retos técnicos enfrentados durante el desarrollo.
+
+---
+
+## 🛠️ Tecnologías
+- **Html, Css** (diseño de la pagina web)
+- **ReactJS** (Funcionalidad de la pagina web)
+- **PostgreSQL** (motor de base de datos)  
+- **SQL** (definición de tablas y relaciones)  
+- **GitHub** (control de versiones y documentación)  
+- **Redes VM** (simulación de nodos distribuidos con maquinas virtuales)
+
+---
+
+## 🌐 Arquitectura de Red
+El sistema se diseñó para simular un banco con múltiples sucursales y cajeros automáticos conectados a una **base de datos distribuida**.  
+- **Servidor central:** coordina la replicación y sincronización de datos.  
+- **Sucursales:** cada una actúa como nodo independiente con fragmentos locales de la BD.  
+- **Cajeros automáticos:** acceden a fragmentos locales para operaciones rápidas y consultan el servidor central para validaciones globales.  
+- **Comunicación:** se implementó sobre redes TCP/IP, simulando la latencia y posibles fallos de conexión.
+
+---
+
+## ⚠️ Retos y Errores Encontrados
+
+### 1. Configuración de la Red
+- **Problema:** Al inicio, los nodos virtuales no lograban comunicarse correctamente debido a errores en la configuración de NAT en VirtualBox.  
+- **Solución:** Se ajustaron las interfaces de red a modo “Red NAT” y se verificó la conectividad con comandos básicos (`ping`, `ifconfig`). Esto permitió la comunicación estable entre nodos.
+
+### 2. Fragmentación de Datos
+- **Problema:** La primera propuesta de fragmentación vertical separaba atributos críticos (RFC, CURP, NIP) en nodos distintos, lo que generaba lentitud en consultas frecuentes.  
+- **Solución:** Se rediseñó la fragmentación, manteniendo atributos esenciales en cada nodo y reservando la fragmentación vertical solo para datos altamente sensibles.
+
+### 3. Sincronización de Transacciones
+- **Problema:** Algunas transacciones quedaban pendientes porque el nodo central no respondía a tiempo.  
+- **Solución:** Se implementó replicación parcial y caché local en cada sucursal, garantizando que las operaciones se registraran incluso si el servidor central estaba temporalmente fuera de servicio.
+
+### 4. Código SQL
+- **Problema:** En las primeras versiones se olvidaron claves foráneas y restricciones de integridad, lo que generaba inconsistencias en las relaciones.  
+- **Solución:** Se revisaron los scripts SQL, añadiendo `FOREIGN KEY`, `NOT NULL` y tipos de datos adecuados (`NUMERIC` en lugar de `FLOAT` para saldos).
+
+### 5. Recursos de las Máquinas Virtuales
+- **Problema:** Algunas máquinas virtuales se saturaban por falta de memoria y procesadores asignados.  
+- **Solución:** Se redistribuyeron los recursos, asignando más memoria a los nodos principales y optimizando el uso de CPU en los nodos secundarios.
+
+---
+## Conclusiones 
+
+1. **Comprensión del concepto de distribución:**  
+   Se aprendió que una BD distribuida no es solo “repartir datos”, sino diseñar cuidadosamente cómo se fragmentan y replican para mantener coherencia y rendimiento.
+
+2. **Escalabilidad real:**  
+   El proyecto mostró que agregar nodos o sucursales es más sencillo en un sistema distribuido, lo que permite crecer sin comprometer la eficiencia.
+
+3. **Tolerancia a fallos:**  
+   La replicación y el caché local demostraron que un sistema distribuido puede seguir funcionando incluso si un nodo falla, garantizando continuidad en operaciones críticas.
+
+4. **Optimización de consultas:**  
+   Se comprendió que la fragmentación mal diseñada puede ser contraproducente. El aprendizaje clave fue que la distribución debe responder a patrones de uso y consultas frecuentes.
+
+5. **Seguridad y confidencialidad:**  
+   La fragmentación vertical aplicada correctamente protege atributos sensibles, reforzando la seguridad de la información bancaria.
+
+6. **Valor del proceso de prueba y error:**  
+   Los errores iniciales en red, SQL y fragmentación fueron esenciales para entender la complejidad de un sistema distribuido y la importancia de pruebas exhaustivas.
+
+---
+
+## 👥 Autores
+Equipo de desarrollo del proyecto **FLUX** – Base de Datos Distribuida Bancaria
+- Vargas Espinoza Braulio **Lider**
+- Vergara Chischistz Jonathan Jesus
+- Moreno Jimenez Uriel
+- Ramos Padron Jesus Emmanuel
+---
+
 
 ## Configuracion
+Aplicacion bancaria React + Express. El backend sirve el frontend compilado y expone la API REST sobre PostgreSQL usando `pg.Pool`.
 
 Cada nodo debe tener su propio `.env`:
 
